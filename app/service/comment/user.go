@@ -72,7 +72,8 @@ func (s *commentService) UserGetCommentReplyList(ctx context.Context,
 }
 
 // UserAddComment 完成用户会话、禁言、限流、文章、回复关系和内容校验，审核评论后将评论与审计记录原子落库。
-// 输入 ctx 控制所有下游操作，request 携带身份、文章、回复目标及内容；返回评论 ID 和审核状态，失败时返回业务或存储错误。
+// 输入 ctx 控制所有下游操作，request 携带身份、文章、回复目标及内容；返回评论 ID，审核通过时额外返回可公开展示的评论，
+// 待审核和拒绝状态不对前台暴露，失败时返回业务或存储错误。
 func (s *commentService) UserAddComment(ctx context.Context,
 	request *types.UserAddCommentRequest) (*types.UserAddCommentResponse, error) {
 
@@ -143,6 +144,7 @@ func (s *commentService) UserAddComment(ctx context.Context,
 			return nil, ErrInvalidComment
 		}
 		parentContent = parent.Content
+		replyToContent = parent.Content
 		replyToCommentID = parent.ID
 		replyToUserID = parent.UserID
 		if parent.ParentID != 0 {
@@ -242,10 +244,42 @@ func (s *commentService) UserAddComment(ctx context.Context,
 		}
 	}
 
-	return &types.UserAddCommentResponse{
-		ID:     strconv.FormatUint(commentID, 10),
-		Status: moderation.Status,
-	}, nil
+	response := &types.UserAddCommentResponse{ID: strconv.FormatUint(commentID, 10)}
+	if moderation.Status == commentModel.StatusApproved {
+		publishedComment := &types.UserCommentItem{
+			ID:           response.ID,
+			ArticleID:    request.ArticleID,
+			UserID:       request.UserID,
+			AuthorName:   commentInfo.AuthorName,
+			AuthorHandle: user.Handle,
+			AvatarURL:    user.AvatarURL,
+			Content:      commentInfo.Content,
+			CreateTime:   now.Format(constants.TimeLayoutToMinute),
+		}
+		if parentID != 0 {
+			publishedComment.ParentID = strconv.FormatUint(parentID, 10)
+		}
+		if replyToUserID != 0 {
+			publishedComment.ReplyToUserID = strconv.FormatUint(replyToUserID, 10)
+		}
+		if replyToCommentID != 0 {
+			publishedComment.ReplyToCommentID = strconv.FormatUint(replyToCommentID, 10)
+			publishedComment.ReplyToContentExcerpt = buildCommentExcerpt(replyToContent)
+		}
+		if replyToUserID != 0 {
+			replyUser, replyUserErr := s.userModel.GetUserByID(ctx, replyToUserID)
+			if replyUserErr != nil {
+				s.logger.Warn("failed to load reply user for published comment response",
+					zap.Uint64("comment_id", commentID), zap.Uint64("reply_user_id", replyToUserID), zap.Error(replyUserErr))
+			} else {
+				publishedComment.ReplyToAuthorName = replyUser.DisplayName
+				publishedComment.ReplyToAuthorHandle = replyUser.Handle
+			}
+		}
+		response.Comment = publishedComment
+	}
+
+	return response, nil
 }
 
 // toUserCommentItem 将数据库列表行 row 转换为前台评论项。

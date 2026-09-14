@@ -55,8 +55,8 @@ type UserAddCommentRequest struct {
 }
 
 type UserAddCommentResponse struct {
-	ID     string `json:"id"`
-	Status string `json:"status"`
+	ID      string           `json:"id"`
+	Comment *UserCommentItem `json:"comment,omitempty"`
 }
 
 type UserReportCommentRequest struct {
