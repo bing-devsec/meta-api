@@ -33,8 +33,7 @@ type Model interface {
 	DeleteArticleDraftByID(ctx context.Context, id uint64) error
 
 	FindArticleImagesByObjectKeys(ctx context.Context, objectKeys []string) (map[string]ArticleImage, error)
-	SyncArticleImageReferences(ctx context.Context, articleID uint64, images []ArticleImage,
-		references []ArticleImageReference) error
+	SyncArticleImageReferences(ctx context.Context, articleID uint64, images []ArticleImage, references []ArticleImageReference) error
 	CreateArticleImage(ctx context.Context, image *ArticleImage) error
 	ListArticleImages(ctx context.Context, query ArticleImageQuery) ([]ArticleImageListRecord, int64, error)
 	GetArticleImageByID(ctx context.Context, id uint64) (*ArticleImage, error)

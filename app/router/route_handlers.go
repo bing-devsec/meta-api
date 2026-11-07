@@ -12,6 +12,7 @@ import (
 	"meta-api/app/handler/link"
 	"meta-api/app/handler/sitedynamic"
 	"meta-api/app/handler/tag"
+	"meta-api/app/handler/toolbox"
 	"meta-api/app/handler/userauth"
 	"meta-api/app/handler/viewlog"
 )
@@ -23,6 +24,7 @@ type routeHandlers struct {
 	jsonShare   jsonshare.Handler
 	link        link.Handler
 	siteDynamic sitedynamic.Handler
+	toolbox     toolbox.Handler
 	tag         tag.Handler
 	userAuth    userauth.Handler
 	viewLog     viewlog.Handler
@@ -39,6 +41,7 @@ func resolveHandlers(container *dig.Container) (*routeHandlers, error) {
 		linkHandler link.Handler,
 		siteDynamicHandler sitedynamic.Handler,
 		tagHandler tag.Handler,
+		toolboxHandler toolbox.Handler,
 		userAuthHandler userauth.Handler,
 		viewLogHandler viewlog.Handler,
 	) {
@@ -49,6 +52,7 @@ func resolveHandlers(container *dig.Container) (*routeHandlers, error) {
 		handlers.link = linkHandler
 		handlers.siteDynamic = siteDynamicHandler
 		handlers.tag = tagHandler
+		handlers.toolbox = toolboxHandler
 		handlers.userAuth = userAuthHandler
 		handlers.viewLog = viewLogHandler
 	})

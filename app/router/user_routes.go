@@ -21,6 +21,9 @@ func registerUserRoutes(group *gin.RouterGroup, handlers *routeHandlers) {
 	group.GET("/tag/article-list", handlers.tag.UserGetArticleListByTag)
 	group.GET("/link", handlers.link.UserGetLinkList)
 
+	// 工具箱
+	group.GET("/toolbox", handlers.toolbox.UserGetToolboxList)
+
 	// 评论与举报
 	group.GET("/comment/list", handlers.comment.UserGetCommentList)
 	group.GET("/comment/reply-list", handlers.comment.UserGetCommentReplyList)

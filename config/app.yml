@@ -4,7 +4,7 @@ log:
   http_info_log: "./log/http.info.log"
   http_warn_log: "./log/http.warn.log"
   http_err_log: "./log/http.err.log"
-  max_size: 1
+  max_size: 10
   max_age: 180
   max_backups: 30
   compress: false
@@ -33,6 +33,11 @@ oauth:
   google:
     client_id: ""
     redirect_uri: ""
+
+guard:
+  build_hashes:
+    - "f021b1d1e37224a2"
+  skip_hmac_when_empty: false
 
 admin_info:
   issuer: BingBingStudentBlogWebsite

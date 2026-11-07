@@ -55,10 +55,6 @@ type AdminListItem struct {
 	LastCommentTime       *time.Time
 }
 
-func (*User) TableName() string {
-	return "user"
-}
-
 func (u *User) IsCommentDisabled(now time.Time) bool {
 	if u == nil || !u.CommentDisabled {
 		return false

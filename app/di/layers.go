@@ -10,6 +10,7 @@ import (
 	linkHandler "meta-api/app/handler/link"
 	siteDynamicHandler "meta-api/app/handler/sitedynamic"
 	tagHandler "meta-api/app/handler/tag"
+	toolboxHandler "meta-api/app/handler/toolbox"
 	userAuthHandler "meta-api/app/handler/userauth"
 	viewLogHandler "meta-api/app/handler/viewlog"
 
@@ -19,6 +20,7 @@ import (
 	linkModel "meta-api/app/model/link"
 	siteDynamicModel "meta-api/app/model/sitedynamic"
 	tagModel "meta-api/app/model/tag"
+	toolboxModel "meta-api/app/model/toolbox"
 	userModel "meta-api/app/model/user"
 
 	adminService "meta-api/app/service/admin"
@@ -28,6 +30,7 @@ import (
 	linkService "meta-api/app/service/link"
 	siteDynamicService "meta-api/app/service/sitedynamic"
 	tagService "meta-api/app/service/tag"
+	toolboxService "meta-api/app/service/toolbox"
 	userAuthService "meta-api/app/service/userauth"
 	viewLogService "meta-api/app/service/viewlog"
 )
@@ -40,6 +43,7 @@ func registerModelProviders(container *dig.Container) error {
 		{name: "link model", constructor: linkModel.NewModel},
 		{name: "site dynamic model", constructor: siteDynamicModel.NewModel},
 		{name: "tag model", constructor: tagModel.NewModel},
+		{name: "toolbox model", constructor: toolboxModel.NewModel},
 		{name: "user model", constructor: userModel.NewModel},
 	}
 	return provideAll(container, providers)
@@ -54,6 +58,7 @@ func registerServiceProviders(container *dig.Container) error {
 		{name: "link service", constructor: linkService.NewService},
 		{name: "site dynamic service", constructor: siteDynamicService.NewService},
 		{name: "tag service", constructor: tagService.NewService},
+		{name: "toolbox service", constructor: toolboxService.NewService},
 		{name: "user auth service", constructor: userAuthService.NewService},
 		{name: "view log service", constructor: viewLogService.NewService},
 	}
@@ -69,6 +74,7 @@ func registerHandlerProviders(container *dig.Container) error {
 		{name: "link handler", constructor: linkHandler.NewHandler},
 		{name: "site dynamic handler", constructor: siteDynamicHandler.NewHandler},
 		{name: "tag handler", constructor: tagHandler.NewHandler},
+		{name: "toolbox handler", constructor: toolboxHandler.NewHandler},
 		{name: "user auth handler", constructor: userAuthHandler.NewHandler},
 		{name: "view log handler", constructor: viewLogHandler.NewHandler},
 	}

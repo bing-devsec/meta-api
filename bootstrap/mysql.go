@@ -19,6 +19,7 @@ import (
 	linkModel "meta-api/app/model/link"
 	siteDynamicModel "meta-api/app/model/sitedynamic"
 	tagModel "meta-api/app/model/tag"
+	toolboxModel "meta-api/app/model/toolbox"
 	userModel "meta-api/app/model/user"
 	"meta-api/common/env"
 	"meta-api/common/loggers"
@@ -251,6 +252,7 @@ func autoMigrateMySQL(db *gorm.DB) error {
 		&articleModel.ArticleImageReference{},
 		&linkModel.Link{},
 		&siteDynamicModel.SiteDynamic{},
+		&toolboxModel.Toolbox{},
 		&userModel.User{},
 		&commentModel.Comment{},
 		&commentModel.CommentReport{},

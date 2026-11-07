@@ -52,14 +52,6 @@ type CommentModerationFeedback struct {
 	UpdateTime         time.Time `gorm:"column:update_time;NOT NULL"`
 }
 
-func (CommentModerationAudit) TableName() string {
-	return "comment_moderation_audit"
-}
-
-func (CommentModerationFeedback) TableName() string {
-	return "comment_moderation_feedback"
-}
-
 type ModerationFeedbackPolicy struct {
 	ExpectedStatus    string
 	ExpectedCategory  string
@@ -161,9 +153,7 @@ func (m *commentModel) ReviewComment(ctx context.Context, id uint64, status stri
 	})
 }
 
-func (m *commentModel) ResolveModerationFeedbackPolicy(ctx context.Context, contentHash,
-	relationFingerprint string,
-) (*ModerationFeedbackPolicy, error) {
+func (m *commentModel) ResolveModerationFeedbackPolicy(ctx context.Context, contentHash, relationFingerprint string) (*ModerationFeedbackPolicy, error) {
 	type policyRow struct {
 		ExpectedStatus   string
 		ExpectedCategory string
@@ -173,10 +163,8 @@ func (m *commentModel) ResolveModerationFeedbackPolicy(ctx context.Context, cont
 		if value == "" {
 			return nil, nil
 		}
-		feedbackTable := (CommentModerationFeedback{}).TableName()
-		auditTable := (CommentModerationAudit{}).TableName()
-		base := m.mysql.WithContext(ctx).Table(feedbackTable+" AS f").
-			Joins("JOIN "+auditTable+" AS a ON a.id = f.audit_id").
+		base := m.mysql.WithContext(ctx).Table("comment_moderation_feedback AS f").
+			Joins("JOIN comment_moderation_audit AS a ON a.id = f.audit_id").
 			Where("f.state = ? AND a."+column+" = ?", ModerationFeedbackStateConfirmed, value)
 		var total int64
 		if err := base.Session(&gorm.Session{}).Count(&total).Error; err != nil {
@@ -199,8 +187,8 @@ func (m *commentModel) ResolveModerationFeedbackPolicy(ctx context.Context, cont
 			Count  int64
 		}
 		var sourceCounts []sourceCountRow
-		if err = m.mysql.WithContext(ctx).Table(feedbackTable+" AS f").
-			Joins("JOIN "+auditTable+" AS a ON a.id = f.audit_id").
+		if err = m.mysql.WithContext(ctx).Table("comment_moderation_feedback AS f").
+			Joins("JOIN comment_moderation_audit AS a ON a.id = f.audit_id").
 			Where("f.state = ? AND a."+column+" = ?", ModerationFeedbackStateConfirmed, value).
 			Where("f.expected_status = ? AND f.expected_category = ?", row.ExpectedStatus, row.ExpectedCategory).
 			Select("a.source, COUNT(*) AS count").Group("a.source").Scan(&sourceCounts).Error; err != nil {

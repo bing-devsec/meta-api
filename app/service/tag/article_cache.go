@@ -31,9 +31,7 @@ func articleTagIDValue(tagID *uint64) uint64 {
 	return *tagID
 }
 
-func (t *tagService) readTagArticlePage(ctx context.Context, key string,
-	start, stop int,
-) ([]string, int64, error) {
+func (t *tagService) readTagArticlePage(ctx context.Context, key string, start, stop int) ([]string, int64, error) {
 	pipe := t.redis.Pipeline()
 	rowsCmd := pipe.ZRevRange(ctx, key, int64(start), int64(stop))
 	totalCmd := pipe.ZCard(ctx, key)
@@ -51,9 +49,7 @@ func (t *tagService) readTagArticlePage(ctx context.Context, key string,
 	return rows, total, nil
 }
 
-func (t *tagService) loadTagArticlePage(ctx context.Context, key, tagName string,
-	start, stop int,
-) ([]string, int64, error) {
+func (t *tagService) loadTagArticlePage(ctx context.Context, key, tagName string, start, stop int) ([]string, int64, error) {
 	rows, total, err := t.readTagArticlePage(ctx, key, start, stop)
 	if err != nil || total > 0 {
 		return rows, total, err
@@ -77,9 +73,7 @@ func (t *tagService) loadTagArticlePage(ctx context.Context, key, tagName string
 	return t.readTagArticlePage(ctx, key, start, stop)
 }
 
-func (t *tagService) readTagArticleCache(ctx context.Context,
-	articleIDs []string,
-) (map[string]tagArticleCacheEntry, []string, error) {
+func (t *tagService) readTagArticleCache(ctx context.Context, articleIDs []string) (map[string]tagArticleCacheEntry, []string, error) {
 	entries := make(map[string]tagArticleCacheEntry, len(articleIDs))
 	if len(articleIDs) == 0 {
 		return entries, nil, nil
@@ -131,9 +125,7 @@ func tagArticleStringFields(values []any) ([]string, bool) {
 	return fields, true
 }
 
-func (t *tagService) loadTagArticleMisses(ctx context.Context,
-	ids []string,
-) (map[string]tagArticleCacheEntry, error) {
+func (t *tagService) loadTagArticleMisses(ctx context.Context, ids []string) (map[string]tagArticleCacheEntry, error) {
 	entries := make(map[string]tagArticleCacheEntry, len(ids))
 	if len(ids) == 0 {
 		return entries, nil
